@@ -1,6 +1,7 @@
 import User, { UserDocument } from "../models/authModel";
 // import connectDataBase from "./config/database";
 import { Request, Response, NextFunction } from "express";
+import { ParamsDictionary } from "express-serve-static-core";
 
 import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors";
@@ -23,7 +24,7 @@ interface Params {
 }
 
 // Register a user   => /api/v1/register
-exports.registerUser = catchAsyncErrors(
+export const registerUser = catchAsyncErrors(
   async (
     req: Request<{}, {}, RegisterUserRequest>,
     res: Response,
@@ -55,7 +56,7 @@ exports.registerUser = catchAsyncErrors(
 );
 
 // Login User  =>  /api/v1/login
-exports.loginUser = catchAsyncErrors(
+export const loginUser = catchAsyncErrors(
   async (
     req: Request<{}, {}, LoginUserRequest>,
     res: Response,
@@ -97,7 +98,7 @@ exports.loginUser = catchAsyncErrors(
 
 // Logout user   =>   /api/v1/logout
 
-exports.logoutUser = catchAsyncErrors(
+export const logoutUser = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     res.cookie("token", null, {
       expires: new Date(Date.now()),
@@ -114,7 +115,7 @@ exports.logoutUser = catchAsyncErrors(
 // Admin Routes
 
 // Get all users   =>   /api/v1/admin/users
-exports.allUsers = catchAsyncErrors(
+export const allUsers = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const users: UserDocument[] = await User.find();
     res.status(200).json({
@@ -126,9 +127,9 @@ exports.allUsers = catchAsyncErrors(
 );
 
 // Get user details   =>   /api/v1/admin/user/:id
-exports.getUserDetails = catchAsyncErrors(
+export const getUserDetails = catchAsyncErrors(
   async (
-    req: Request<Params>,
+    req: Request<ParamsDictionary, any, any, any, Record<string, any>>,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -148,9 +149,9 @@ exports.getUserDetails = catchAsyncErrors(
 );
 
 // Update user profile   =>   /api/v1/admin/user/:id
-exports.updateUserByAdmin = catchAsyncErrors(
+export const UpdateUserByAdmin = catchAsyncErrors(
   async (
-    req: Request<Params, {}, { name: string; email: string; role: string }>,
+    req: Request<ParamsDictionary, any, any, any, Record<string, any>>,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -185,9 +186,9 @@ exports.updateUserByAdmin = catchAsyncErrors(
 );
 
 // Delete user by Admin  =>   /api/v1/admin/user/:id
-exports.deleteUserByAdmin = catchAsyncErrors(
+export const deleteUserByAdmin = catchAsyncErrors(
   async (
-    req: Request<Params>,
+    req: Request<ParamsDictionary, any, any, any, Record<string, any>>,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
