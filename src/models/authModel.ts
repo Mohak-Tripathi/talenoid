@@ -1,9 +1,31 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import validator from 'validator'
+import bcrypt from "bcryptjs"
+import jwt from "jsonwebtoken"
+import mongoose, { Document, Model } from 'mongoose';
 
-const userSchema = new mongoose.Schema({
+
+// export type UserDocument = Document & {
+//     name: string;
+//     email: string;
+//     password: string;
+//     role: string;
+//     createdAt: Date;
+//     comparePassword(enteredPassword: string): Promise<boolean>;
+//     getJwtToken(): string;
+
+// }
+
+export interface UserDocument extends Document {
+    name: string;
+    email: string;
+    password: string;
+    role: string;
+    createdAt: Date;
+    comparePassword(enteredPassword: string): Promise<boolean>;
+    getJwtToken(): string;
+}
+
+const userSchema = new mongoose.Schema<UserDocument>({
     name: {
         type: String,
         required: [true, 'Please enter your name'],
@@ -33,7 +55,7 @@ const userSchema = new mongoose.Schema({
 })
 
 // Encrypting password before saving user
-userSchema.pre('save', async function (next) {
+userSchema.pre<UserDocument>('save', async function (next) {
     if (!this.isModified('password')) {
         next()
     }
@@ -42,18 +64,21 @@ userSchema.pre('save', async function (next) {
 })
 
 // Compare user password
-userSchema.methods.comparePassword = async function (enteredPassword) {
+userSchema.methods.comparePassword = async function (enteredPassword: string) : Promise <boolean> {
     return await bcrypt.compare(enteredPassword, this.password)
 }
 
 // Return JWT token
 
-userSchema.methods.getJwtToken = function () {
+userSchema.methods.getJwtToken = function ():string {
     return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_TIME
     });
 }
 
 
+// module.exports = mongoose.model('User', userSchema);
 
-module.exports = mongoose.model('User', userSchema);
+const User: Model<UserDocument> = mongoose.model('User', userSchema);
+
+export default User; 

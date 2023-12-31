@@ -1,14 +1,13 @@
-const express = require("express");
+import express from 'express';
+import cookieParser from "cookie-parser"
+import dotenv from "dotenv";
+import bodyParser from "body-parser";
 const app = express();
 
-const cookieParser = require("cookie-parser")
-const dotenv = require("dotenv");
-const bodyParser = require("body-parser"); 
+import connectDataBase from "./config/database";
+import errorMiddleware from "./middlewares/errors";
+import ErrorHandler from "./utils/errorHandler";
 
-
-const connectDataBase = require("./config/database")
-const errorMiddleware = require("./middlewares/errors")
-const ErrorHandler = require("./utils/errorHandler")
 
 //setting config environemnt file variable
 dotenv.config({ path: "./config/config.env" });
@@ -33,8 +32,7 @@ app.use(cookieParser());
 
 //Import all routes
 
-const auth = require("./routes/authRoutes");
-
+import auth from './routes/authRoutes'
 
 
 app.use("/api/v1", auth);
@@ -62,7 +60,7 @@ const server = app.listen(8080, () => {
 
 //Handling Unhandled Promise Rejection 
 
-process.on("unhandledRejection", err =>{
+process.on("unhandledRejection", (err:any) =>{
 
   console.log(`Error: ${err.stack}`);
   console.log(`Shutting down server due to unhandled promise rejection`);
