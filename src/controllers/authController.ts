@@ -149,7 +149,7 @@ export const getUserDetails = catchAsyncErrors(
 );
 
 // Update user profile   =>   /api/v1/admin/user/:id
-export const UpdateUserByAdmin = catchAsyncErrors(
+export const updateUserByAdmin = catchAsyncErrors(
   async (
     req: Request<ParamsDictionary, any, any, any, Record<string, any>>,
     res: Response,
@@ -198,7 +198,7 @@ export const deleteUserByAdmin = catchAsyncErrors(
 
     if (!user) {
       return next(
-        new ErrorHandler(`User does not found with id: ${req.params.id}`)
+        new ErrorHandler(`User does not found with id: ${req.params.id}`, 404)
       );
     }
 
